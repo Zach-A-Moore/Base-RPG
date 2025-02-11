@@ -1,5 +1,3 @@
-from RPG_3_class import Scene
-
 
 def yesno (value : str) -> int :
     """ This Function takes an Input from the user as a value, checks if it's a non blank string, and if it is, it will check if the 

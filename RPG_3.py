@@ -38,8 +38,9 @@ print(" A large room lays before you a kindly wizard waiting by the door,",
 WT_explore = Scene(["The cauldron", "The weapons rack",
                     "The window","Cheese?"])
 WT_window = Scene(["something interesting", "something valuable", "something else (exit)"])
+WT_window_goblin = Scene(["Push a brick over", "Let the green man be"])
 WT_trackers = Tracker()
-WT_trackers.compile_track(["EXIT", "CHEESE", "S_CAULDRON", "W"], 0)
+WT_trackers.compile_track(["EXIT", "CHEESE", "S_CAULDRON", "W", "W_Goblin"], 0)
 
 while answer_explore == 1:
     print(WT_explore)
@@ -55,23 +56,44 @@ while answer_explore == 1:
                 " on your soul")
         print("\n You have gained, CHEESE \n")
 
-    if WT_explore.choice == "The window":
+    if choice == "The window":
         if WT_trackers.trackers["W"] == 0:
             WT_trackers.trackers["W"] = 1
             print("    At the northern side of the room is a window about the size\n",
                   "of yourself, you approach as your eyes adjust to the landscape\n",
                   "in front of you. Vast green valleys, blue rivers, quant town, it's...\n",
                   "Nice, You want to look for... \n")
+            print(WT_window)
+            temp_input = input("What would you like to choose? ")
             temp_input = choice_num_loop(WT_window.compile_scene(), temp_input)
             choice = WT_window.choices[temp_input - 1]
+
             if choice == "something else (exit)":
                 print("A bah-humbugary and boredom for this world is all you find\n")
-            elif temp_input == "something valuable":
+                WT_explore.del_choice("The window")
+
+            elif choice == "something valuable":
                 print("As you search the world in front of you a glint catches your\n",
                       "eye. Instinctively you trace the origin and find small gold coin",
                       "\nstashed away in between the stones of the window.\n\n,"
                       "You found 1 GOLD!!\n")
                 hero.loot([1, "GOLD"])
+            elif choice == "something interesting":
+                print("You scan the horizon and find their way down to the base\n",
+                      "of the tower. A small green speck seems to be sneaking in.\n")
+                temp_input = choice_num_loop\
+                    (WT_window_goblin.compile_scene(), temp_input)
+                choice = WT_window_goblin.choices[temp_input - 1]
+                if choice == "Push a brick over":
+                    print("you look around, and slowly push the cement brick",
+                          " Over the ledge.\nNo one has witnessed your crime\n")
+                    WT_window.del_choice("something interesting")
+                    WT_trackers.update("W_goblin", 1)
+                if choice == "Let the green man be":
+                    print("You consider it, and decide you don't want to be a monster\n")
+                    WT_window.del_choice("something interesting")
+                
+
 
 
             
