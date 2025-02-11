@@ -37,8 +37,9 @@ print(" A large room lays before you a kindly wizard waiting by the door,",
     "which holds a pretty cool looking sword\n")
 WT_explore = Scene(["The cauldron", "The weapons rack",
                     "The window","Cheese?"])
+WT_window = Scene(["something interesting", "something valuable", "something else (exit)"])
 WT_trackers = Tracker()
-WT_trackers.compile_track(["EXIT", "CHEESE", "S_CAULDRON"])
+WT_trackers.compile_track(["EXIT", "CHEESE", "S_CAULDRON", "W"], 0)
 
 while answer_explore == 1:
     print(WT_explore)
@@ -48,10 +49,32 @@ while answer_explore == 1:
 
     if choice == "Cheese?" and WT_explore.choices[3] == "Cheese?":
         WT_explore.del_choice("Cheese?")
+        WT_trackers.update("CHEESE", 1)
         hero.loot([1, "CHEESE"])
         print("You have chosen a path you can not return from, may god have mercy",
                 " on your soul")
         print("\n You have gained, CHEESE \n")
 
-    if choice == "The window"
+    if WT_explore.choice == "The window":
+        if WT_trackers.trackers["W"] == 0:
+            WT_trackers.trackers["W"] = 1
+            print("    At the northern side of the room is a window about the size\n",
+                  "of yourself, you approach as your eyes adjust to the landscape\n",
+                  "in front of you. Vast green valleys, blue rivers, quant town, it's...\n",
+                  "Nice, You want to look for... \n")
+            temp_input = choice_num_loop(WT_window.compile_scene(), temp_input)
+            choice = WT_window.choices[temp_input - 1]
+            if choice == "something else (exit)":
+                print("A bah-humbugary and boredom for this world is all you find\n")
+            elif temp_input == "something valuable":
+                print("As you search the world in front of you a glint catches your\n",
+                      "eye. Instinctively you trace the origin and find small gold coin",
+                      "\nstashed away in between the stones of the window.\n\n,"
+                      "You found 1 GOLD!!\n")
+                hero.loot([1, "GOLD"])
+
+
+            
+                
+
 
