@@ -29,7 +29,7 @@ while (answer_explore == 0):
     temp_index += 1
     answer_explore = yesno_loop(input("Would you like to leave? Y/N: "),\
                                 "Would you like to leave? Y/N: ")
-   
+# This section is the introduction to the wizard tower
 print(" A large room lays before you a kindly wizard waiting by the door,",
         " \n a deep black stone is what makes up most of walls and floor.\n",
     "A massive cauldron in the center of the room",
@@ -37,26 +37,32 @@ print(" A large room lays before you a kindly wizard waiting by the door,",
     "which holds a pretty cool looking sword\n")
 WT_explore = Scene(["The cauldron", "The weapons rack",
                     "The window","Cheese?"])
-WT_window = Scene(["something interesting", "something valuable", "something else (exit)"])
+WT_window = Scene(["something interesting", "something valuable",
+                   "something else (exit)"])
 WT_window_goblin = Scene(["Push a brick over", "Let the green man be"])
 WT_trackers = Tracker()
 WT_trackers.compile_track(["EXIT", "CHEESE", "S_CAULDRON", "W", "W_Goblin"], 0)
 
+# will run until exited
 while answer_explore == 1:
     print(WT_explore)
     temp_input = input("What would you like to choose? ")
     temp_input = choice_num_loop(WT_explore.compile_scene(), temp_input)
     choice = WT_explore.choices[temp_input - 1]
-
+    # temporary cheese choice, will be removed after first iteration
     if choice == "Cheese?" and WT_explore.choices[3] == "Cheese?":
         WT_explore.del_choice("Cheese?")
         WT_trackers.update("CHEESE", 1)
         hero.loot([1, "CHEESE"])
         print("You have chosen a path you can not return from, may god have mercy",
                 " on your soul")
+        # should allow some weirder choices
         print("\n You have gained, CHEESE \n")
 
+    # player picks the window
     if choice == "The window":
+
+            # Runs the first time
         if WT_trackers.trackers["W"] == 0:
             WT_trackers.trackers["W"] = 1
             print("    At the northern side of the room is a window about the size\n",
@@ -68,6 +74,7 @@ while answer_explore == 1:
             temp_input = choice_num_loop(WT_window.compile_scene(), temp_input)
             choice = WT_window.choices[temp_input - 1]
 
+                # removes window as a choice from WT_explore
             if choice == "something else (exit)":
                 print("A bah-humbugary and boredom for this world is all you find\n")
                 WT_explore.del_choice("The window")
@@ -92,7 +99,15 @@ while answer_explore == 1:
                 if choice == "Let the green man be":
                     print("You consider it, and decide you don't want to be a monster\n")
                     WT_window.del_choice("something interesting")
-                
+        if WT_trackers.trackers["W"] == 1:
+            print("You've already looked out the window\n")
+
+    # player picks the weapons rack
+    if choice == "The weapons rack":
+        print("test")
+                    
+    if choice == "The cauldron":
+        print("test") 
 
 
 
