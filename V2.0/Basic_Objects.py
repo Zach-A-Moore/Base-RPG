@@ -1,5 +1,5 @@
 from Basic_Functions import choice_num, choice_num_loop, print_choice
-import Consumables
+from Consumables import consumable_tracker
 import sys
 import random 
 
@@ -89,7 +89,6 @@ class Entity:
         """Override in child classes for death behavior"""
         print(f"{self.name} was killed by {attacker_name}")
 
-
 class Player(Entity): # declares the class
     def __init__(self, HP : int, maxHP : int, name : str,
                 items : list[list[int, str]]=[],\
@@ -125,7 +124,7 @@ class Player(Entity): # declares the class
     def loot_weapon(self, weapon : list[str,int,int]) -> None:
         self.weapons.append(weapon)
 
-    def inventory(self) -> None:
+    def inventory_check(self) -> None:
         if self.items == []:
             print("you have no items")
         else:
@@ -145,7 +144,7 @@ class Player(Entity): # declares the class
                         f"{dmg} damage with a +{hit} bonus to hit")
     
 
-    def attack(self, other : Object):
+    def attack(self, other : Entity):
         print(f"\nWhat weapon would you like to use?")
         temp_tracker = 1
         temp_menu = {}
@@ -161,39 +160,25 @@ class Player(Entity): # declares the class
         other.hurt(damage, self.name)
 
     def use_item(self) -> None:
-        temp_menu_1 = {}
+        print("What item would you like to use?")
         temp_tracker = 1
-        temp_tracker_items = 0
-        temp_tracker_list = []
-        temp_input = ""
-        temp_solution = "" # need to rewrite object class and read from it
-        for items in self.items:
-            if items[0] <= 0:
-                temp_tracker_items += 1
-                continue
-            else:
-                temp_menu_1[items[1]] = temp_tracker
-                temp_tracker_list.append(temp_tracker_items)
-                temp_tracker += 1
-                temp_tracker_items += 1
-            if temp_menu_1 == []:
-                print("You dont have any items left")
-                break
-            else:
-                for num in temp_tracker_list:
-                    self.items[num][0] -= 1
-                print_choice(temp_menu_1)
-                temp_input = input("Enter here: ")
-                temp_input = choice_num_loop(temp_menu_1, temp_input)
-                for key, value in temp_menu_1.items():
-                    if value == temp_input:
-                        print(f"You use a {key}")
-                        temp_solution = key
-                        break
-                if temp_solution == "POTION":
-                    self.heal(10)
-                if temp_solution == "MOON CHEESE":
-                    self.maxHP += 10
+        empty = 1
+        temp_menu = {}
+        for lists in self.items:
+            temp_menu[lists[1]] = temp_tracker
+            temp_tracker += 1
+            empty = 0
+        if empty:
+            print("You have no items to use")
+            return
+        print_choice(temp_menu)
+        temp_input = input("Enter here: ")
+        temp_input = choice_num_loop(temp_menu, temp_input)
+        current_item = self.items[temp_input - 1]
+        consumable_tracker(current_item[1], self)
+        current_item[0] -= 1
+        if current_item[0] == 0:
+            self.items.pop(temp_input - 1)
 
 
     def combat_menu(self, other):
@@ -288,7 +273,7 @@ def tester():
     menu.del_choice("window")
     assert menu.compile_scene() == {"wall" : 1, "exit" : 2}
 
-testing = 1
+testing = 0
 def main():
     if testing:
         tester()

@@ -55,6 +55,12 @@ def choice_num_loop (choices : dict, input_1 : str) -> int:
             input_1 = input(f"please enter one of the values entered above :")
             continue
 
+def menu_handler (choices : object) -> int:
+    print(choices)
+    temp_input = input("What would you like to choose? ")
+    temp_input = choice_num_loop(choices.compile_scene(), temp_input)
+    return choices.choices[temp_input - 1]
+
 def print_choice (choices : dict[str : int]) -> None:
     """Prints dictionaries"""
     for key, value in choices.items():

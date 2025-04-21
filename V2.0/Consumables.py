@@ -1,7 +1,5 @@
-from Basic_Objects import Scene, Object, Player, Tracker, Goblin, Entity
-import random
 
-def consumable_tracker(name : str, creature : Entity) -> None:
+def consumable_tracker(name : str, creature : object) -> None:
     clean = name.strip()
     clean = clean.upper()
     if (name == "SMALL HEALTH POTION"):
@@ -9,5 +7,5 @@ def consumable_tracker(name : str, creature : Entity) -> None:
         
 
 
-def small_hp(creature : Entity):
+def small_hp(creature : object):
     creature.heal(5)

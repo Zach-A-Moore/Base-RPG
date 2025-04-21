@@ -1,4 +1,4 @@
-from Basic_Functions import yesno_loop, choice_num_loop, print_choice
+from Basic_Functions import yesno_loop, choice_num_loop, print_choice, menu_handler
 from Basic_Objects import Scene, Object, Player, Tracker, Goblin
 from Consumables import consumable_tracker
 
@@ -36,3 +36,27 @@ while (answer_explore == 0): # if the player doesn't want to look around
     answer_explore = yesno_loop(input("Would you like to open your eyes? Y/N: "),\
                                 "Would you like to open your eyes? Y/N: ")
 
+print(" A large room lays before you a kindly wizard waiting by the door,",
+        " \n a deep black stone is what makes up most of walls and floor.\n",
+    "A massive cauldron in the center of the room",
+    "bubbles pleasantly, Alongside this a weapons rack\n",
+    "which holds a pretty cool looking sword\n")
+
+# main menu
+WT_explore = Scene(["The cauldron", "The weapons rack",
+                    "The window","Cheese?"])
+# window menu
+WT_window = Scene(["something interesting", "something valuable",
+                   "something else (exit)"])
+# window menu - goblin menu
+WT_window_goblin = Scene(["Push a brick over", "Let the green man be"])
+WT_trackers = Tracker()
+WT_trackers.compile_track(["EXIT", "CHEESE", "S_CAULDRON", "W", "W_Goblin"], 0)
+
+while answer_explore == 1:
+    choice = menu_handler(WT_explore)
+    # print(WT_explore)
+    # temp_input = input("What would you like to choose? ")
+    # temp_input = choice_num_loop(WT_explore.compile_scene(), temp_input)
+    # choice = WT_explore.choices[temp_input - 1]
+    
