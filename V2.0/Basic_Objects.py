@@ -56,10 +56,17 @@ class Tracker:
             self.trackers[element] = default
 
     def update(self, name : str, new : int):
-        """new will act as a ="""
+        """new will act as a +="""
         for key, value in self.trackers.items():
             if key == name:
-                self.trackers[key] = new
+                self.trackers[key] += new
+
+    def get(self, name : str) -> int:
+        """returns the value of the key"""
+        for key, value in self.trackers.items():
+            if key == name:
+                return value
+        return 404
 
     def delete(self, name):
         for key in self.trackers.keys():
@@ -92,7 +99,7 @@ class Entity:
 class Player(Entity): # declares the class
     def __init__(self, HP : int, maxHP : int, name : str,
                 items : list[list[int, str]]=[],\
-                weapons : list[list[str,int,int,int]]=[]):
+                weapons : list[list[str,int,int,int]]=[]): # ["name", die #, die type, Hit bonus, damage bonus]
         super().__init__(name, HP, maxHP)
         self.items = items
         self.weapons = weapons
@@ -142,6 +149,7 @@ class Player(Entity): # declares the class
             for name,die_num,die_type,hit,dmg in self.weapons:
                 print(f"{name:<10}: {die_num}d{die_type} +",
                         f"{dmg} damage with a +{hit} bonus to hit")
+        print()
     
 
     def attack(self, other : Entity):
@@ -171,9 +179,13 @@ class Player(Entity): # declares the class
         if empty:
             print("You have no items to use")
             return
+        else:
+            temp_menu["Exit"] = temp_tracker
         print_choice(temp_menu)
         temp_input = input("Enter here: ")
         temp_input = choice_num_loop(temp_menu, temp_input)
+        if temp_input == temp_tracker:
+            return
         current_item = self.items[temp_input - 1]
         consumable_tracker(current_item[1], self)
         current_item[0] -= 1
@@ -206,19 +218,8 @@ class Player(Entity): # declares the class
                 else:
                     self.use_item()
 
-class Goblin:
-    """ this class is meant to define a goblin object, which takes a name as a 
-    str, a weapon as a str classified by small, medium, and big, maxHp and HP
-    which mirror the player class, that being keeping track of health and it's 
-    limit, and an alive stat that determines if health has reached
-    damage determined by the goblins weapon will generate a random number
-    hurt takes a name and int to effect the goblins HP, if it reaches zero
-    the goblins alive stat will change to false and print a message, 
-    otherwise a message will print displaying the damage taken and change
-    of the goblin HP.
-    attack takes a player class, and using damage will subtract a number
-    from the players HP, and possibly kill them with a message accordingly.
-    """
+class Goblin(Entity):
+    """ Goblin class, inherits from Entity """
     def __init__(self, name: str = "Wretch", weapon: str = "Small",
                  maxHP: int = 15, HP: int = 15, alive: bool = True):
         super().__init__(name, HP, maxHP)

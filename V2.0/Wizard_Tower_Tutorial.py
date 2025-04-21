@@ -37,7 +37,7 @@ while (answer_explore == 0): # if the player doesn't want to look around
                                 "Would you like to open your eyes? Y/N: ")
 
 print(" A large room lays before you a kindly wizard waiting by the door,",
-        " \n a deep black stone is what makes up most of walls and floor.\n",
+        " \na deep black stone is what makes up most of walls and floor.\n",
     "A massive cauldron in the center of the room",
     "bubbles pleasantly, Alongside this a weapons rack\n",
     "which holds a pretty cool looking sword\n")
@@ -51,7 +51,7 @@ WT_window = Scene(["something interesting", "something valuable",
 # window menu - goblin menu
 WT_window_goblin = Scene(["Push a brick over", "Let the green man be"])
 WT_trackers = Tracker()
-WT_trackers.compile_track(["EXIT", "CHEESE", "S_CAULDRON", "W", "W_Goblin"], 0)
+WT_trackers.compile_track(["CHEESE", "CAULDRON", 'CAULDRON_HP'])
 
 while answer_explore == 1:
     choice = menu_handler(WT_explore)
@@ -59,4 +59,51 @@ while answer_explore == 1:
     # temp_input = input("What would you like to choose? ")
     # temp_input = choice_num_loop(WT_explore.compile_scene(), temp_input)
     # choice = WT_explore.choices[temp_input - 1]
+    if choice == "Cheese?":
+        WT_explore.del_choice("Cheese?")
+        WT_trackers.update("CHEESE", 1)
+        hero.loot([1, "CHEESE"])
+        print("You have chosen a path you can not return from, may god have mercy",
+                " on your soul")
+        print("\n You have gained, CHEESE \n")
+    else:
+        WT_explore.del_choice("Cheese?")
+
+    if choice == "The cauldron":
+        potion = WT_trackers.get("CAULDRON_HP")
+        if WT_trackers.get("CAULDRON") == 0: # first time
+            WT_trackers.update("CAULDRON", 1)
+            print("As you approach the cauldron it vibrant pink solution becomes\n"+
+                  "visible, and the pleasant smell of strawberries fills the air\n"+
+                  "'Go ahead, grab a bottle', the wizard says\n")
+            print("will you take a potion?")
+            temp_input = yesno_loop(input("Take a potion? Y/N: "), "Take a potion? Y/N: ")
+
+            if temp_input == 1:
+                print("You have taken a potion")
+                hero.loot([1, "SMALL HEALTH POTION"])
+                hero.inventory_check()
+                WT_trackers.update("CAULDRON_HP", 1)
+            else:
+                print("You walk away from the cauldron, the wizard looks disappointed\n",)
+
+        elif WT_trackers.get("CAULDRON_HP") == 0: # potion not taken
+            print("You once again approach the cauldron, have you changed your mind?\n",)
+            temp_input = yesno_loop(input("Take a potion? Y/N: "), "Take a potion? Y/N: ")
+            if temp_input == 1:
+                print("You have taken a potion")
+                hero.loot([1, "SMALL HEALTH POTION"])
+                hero.inventory_check()
+                WT_trackers.update("CAULDRON_HP", 1)
+            else:
+                print("You walk away from the cauldron, the wizard nods\n",)
+
+        elif WT_trackers.get("CAULDRON_HP") == 1: # potion taken
+            print("The smell of strawberries still fills the air, but the cauldron is empty\n",)
+            input("return?")
+
+    if choice == "The window":
+        print("window test")
     
+    if choice == "The weapons rack":
+        print("weapons rack test")
