@@ -32,6 +32,11 @@ class Scene:
         if found != -1:
             del self.choices[found]
 
+    def add_choice(self, key : str):
+        """adds a choice to the menu"""
+        self.choices.append(key)
+
+
 class Object:
 
     def __init__(self, name : str, amount : int):
@@ -90,8 +95,6 @@ class Entity:
         if self.HP <= 0:
             self.HP = 0
             self.on_death(attacker_name)
-        else:
-            print(f"{self.name} has taken {DMG} damage")
 
     def heal(self, amount: int):
         self.HP += amount
@@ -104,7 +107,7 @@ class Entity:
 
 class Player(Entity): # declares the class
     def __init__(self, HP : int, maxHP : int, name : str,
-                items : list[list[int, str]]=[],\
+                items : list[list[int, str]]=[],
                 weapons : list[list[str,int,int,int]]=[]): # ["name", die #, die type, Hit bonus, damage bonus]
         super().__init__(name, HP, maxHP)
         self.items = items
@@ -170,19 +173,18 @@ class Player(Entity): # declares the class
         temp_input = choice_num_loop(temp_menu, temp_input)
         current_weapon = self.weapons[temp_input - 1]
         damage = current_weapon[1] * (random.randint(1,current_weapon[2]))\
-               + current_weapon[3]
+               + current_weapon[4]
         other.hurt(damage, self.name)
+        print(f"You did {damage} damage with {current_weapon[0]}")
 
     def use_item(self) -> None:
         print("What item would you like to use?")
         temp_tracker = 1
-        empty = 1
         temp_menu = {}
         for lists in self.items:
             temp_menu[lists[1]] = temp_tracker
             temp_tracker += 1
-            empty = 0
-        if empty:
+        if not self.items:
             print("You have no items to use")
             return
         else:
@@ -215,14 +217,8 @@ class Player(Entity): # declares the class
             if temp_input == 3:
                 self.attack(other)
                 break
-            for lists in self.items:
-                if not lists[0] <= 0:
-                    temp_tracker = 1
             if temp_input == 4:
-                if self.items or temp_tracker == 0:
-                    print("You have no items to use")
-                else:
-                    self.use_item()
+                self.use_item()
 
 class Goblin(Entity):
     """ Goblin class, inherits from Entity """
@@ -242,8 +238,7 @@ class Goblin(Entity):
         else:
             status = "Dead"
         
-        return f"The goblin {self.name} has a {self.weapon}\
-                 weapon\n HP {self.HP}/{self.maxHP}\n Status: {status}"
+        return f"The goblin {self.name} has a {self.weapon} weapon\n HP {self.HP}/{self.maxHP}\n Status: {status}"
     
     def damage(self) -> None:
         if self.weapon == "Big":
@@ -271,7 +266,13 @@ class Goblin(Entity):
         "print current health out of max health"
         return f"{self.HP}/{self.maxHP}"
 
-
+def Goblin_generator() -> Goblin:
+    """Generates a goblin with random stats"""
+    name = random.choice(["Wretch", "Grunt", "Snatcher", "Stabber"])
+    weapon = random.choice(["Small", "Medium"])
+    maxHP = random.randint(10, 20)
+    HP = maxHP
+    return Goblin(name, weapon, maxHP, HP)
 
 def tester():
     menu = Scene(["window", "wall", "exit"])

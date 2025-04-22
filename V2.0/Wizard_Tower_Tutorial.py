@@ -2,6 +2,19 @@ from Basic_Functions import yesno_loop, choice_num_loop, print_choice, menu_hand
 from Basic_Objects import Scene, Object, Player, Tracker, Goblin
 from Consumables import consumable_tracker
 
+def take_weapon():
+    choice = menu_handler(WT_wp_menu)
+    if choice != "Exit":
+        hero.loot_weapon(WT_weapons_stats[choice])
+        print(f"You have taken the {choice}")
+        WT_wp_menu.del_choice(choice)
+        WT_trackers.update("WR_LEFT", 1)
+        if WT_trackers.get("WR_LEFT") == 3:
+            print("~you monster\n")
+    else:
+        print("You walk away from the weapons rack, the wizard nods\n")
+
+
 print ("hello world\nYou hear the wizard utter as he casts aside the drapes of," \
 " his towers window.\nOpen your eyes and behold the world of Veliam.\n")
 temp_name = input("Welcome, what is your name traveler? (12 chr limit) ")
@@ -61,7 +74,7 @@ WT_weapons_stats = {"Knife" : ["Knife", 1, 4, -1, 0],
                     "Sword" : ["Sword", 2, 6, -1, 4],
                     "Mace" : ["Mace", 1, 8, -1, 2]}
 
-while answer_explore == 1: 
+while answer_explore == 1: # top floor of the tower
     choice = menu_handler(WT_explore)
     # print(WT_explore)
     # temp_input = input("What would you like to choose? ")
@@ -110,18 +123,6 @@ while answer_explore == 1:
         elif WT_trackers.get("CAULDRON_HP") == 1: # potion taken
             print("The smell of strawberries still fills the air, but the cauldron is empty\n",)
             input("return?")
-
-    def take_weapon():
-        choice = menu_handler(WT_wp_menu)
-        if choice != "Exit":
-            hero.loot_weapon(WT_weapons_stats[choice])
-            print(f"You have taken the {choice}")
-            WT_wp_menu.del_choice(choice)
-            WT_trackers.update("WR_LEFT", 1)
-            if WT_trackers.get("WR_LEFT") == 3:
-                print("~you monster\n")
-        else:
-            print("You walk away from the weapons rack, the wizard nods\n")
 
     if choice == "The weapons rack":
         # weapons_left = WT_trackers.get("WR_LEFT")
@@ -176,6 +177,22 @@ while answer_explore == 1:
             WT_trackers.update("WR_LEFT", 1)
             input("return?")
 
-
     if choice == "The window":
-        print("window test")
+        print("the sunshine down on you as you approach, the light is blinding\n"+
+              "As your eyes adjust to the landscape in front of you, you see\n"+
+              "vast green valleys, blue rivers, and a quaint town.\n")
+        WT_trackers.update("EXIT", 1)
+        input("return?")
+
+    if WT_trackers.get("EXIT") == 3 and "exit" not in WT_explore.choices:
+        WT_explore.add_choice("Exit")
+
+    if choice == "Exit":
+        break
+
+print("As you approach the wizard, he smiles and says\n"+
+      "'I must test you before you leave my tower\n'"+
+      "He brings down his staff and in a wurl of smoke a goblin appears\n")
+dummy = Goblin("wretch", "small", 15, 15)
+while dummy.HP > 0:
+    hero.combat_menu(dummy)

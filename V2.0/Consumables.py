@@ -4,13 +4,11 @@ def consumable_tracker(name : str, creature : object) -> None:
     clean = clean.upper()
     if (name == "SMALL HEALTH POTION"):
         small_hp(creature)
-    if (name == "CHEESE"):
+    elif (name == "CHEESE"):
         cheese(creature)
     else:
         print(f"{name} is not a valid consumable")
         
-        
-
 
 def small_hp(creature : object):
     creature.heal(10)
