@@ -1,0 +1,23 @@
+from Basic_Functions import yesno_loop, choice_num_loop, print_choice, menu_handler
+from Basic_Objects import Scene, Object, Player, Tracker, Goblin
+from Consumables import consumable_tracker
+import ast
+
+file_path = r"C:\Users\zacha\OneDrive\Desktop\mooreHON\V2.0 text files\hero_save.txt"
+
+with open(file_path, "r") as file:
+    line = file.readline()
+    parts = line.strip().split(',', 4)  # split only the first 4 commas
+
+    hero_name = parts[0].strip()
+    hero_HP = int(parts[1].strip())
+    hero_maxHP = int(parts[2].strip())
+
+    # Use ast.literal_eval for safe evaluation of list strings
+    hero_items = ast.literal_eval(parts[3].strip())
+    hero_weapons = ast.literal_eval(parts[4].strip())
+
+hero = Player(hero_HP, hero_maxHP, hero_name, hero_items, hero_weapons)
+
+def wizard_tower():
+        print()

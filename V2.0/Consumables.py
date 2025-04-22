@@ -6,9 +6,10 @@ def consumable_tracker(name : str, creature : object) -> None:
         small_hp(creature)
     elif (name == "CHEESE"):
         cheese(creature)
+    elif (name == "NOTHING"):
+        print(f"{creature.name} has done nothing")
     else:
         print(f"{name} is not a valid consumable")
-        
 
 def small_hp(creature : object):
     creature.heal(10)
