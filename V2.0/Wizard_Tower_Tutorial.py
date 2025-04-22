@@ -42,18 +42,26 @@ print(" A large room lays before you a kindly wizard waiting by the door,",
     "bubbles pleasantly, Alongside this a weapons rack\n",
     "which holds a pretty cool looking sword\n")
 
-# main menu
+### main menu
 WT_explore = Scene(["The cauldron", "The weapons rack",
                     "The window","Cheese?"])
-# window menu
+### window menu
 WT_window = Scene(["something interesting", "something valuable",
                    "something else (exit)"])
-# window menu - goblin menu
+## window menu - goblin menu
 WT_window_goblin = Scene(["Push a brick over", "Let the green man be"])
 WT_trackers = Tracker()
-WT_trackers.compile_track(["CHEESE", "CAULDRON", 'CAULDRON_HP'])
+WT_trackers.compile_track(["CHEESE", "CAULDRON", "CAULDRON_HP", "WR", "WR_LEFT", "EXIT"])
+### weapons rack menu
+WT_wp_menu = Scene(["Sword", "Knife", "Mace", "Exit"])
+WT_weapons_description = {"Knife" : "A rusty knife lays on the floor",
+                          "Sword" : "A silver sword catches your eye, its held by the hilt",
+                          "Mace" : "A large mace rest against the rack"}
+WT_weapons_stats = {"Knife" : ["Knife", 1, 4, -1, 0],
+                    "Sword" : ["Sword", 2, 6, -1, 4],
+                    "Mace" : ["Mace", 1, 8, -1, 2]}
 
-while answer_explore == 1:
+while answer_explore == 1: 
     choice = menu_handler(WT_explore)
     # print(WT_explore)
     # temp_input = input("What would you like to choose? ")
@@ -72,6 +80,7 @@ while answer_explore == 1:
     if choice == "The cauldron":
         potion = WT_trackers.get("CAULDRON_HP")
         if WT_trackers.get("CAULDRON") == 0: # first time
+            WT_trackers.update("EXIT", 1) # needs a total score of 3 to exit
             WT_trackers.update("CAULDRON", 1)
             print("As you approach the cauldron it vibrant pink solution becomes\n"+
                   "visible, and the pleasant smell of strawberries fills the air\n"+
@@ -102,8 +111,71 @@ while answer_explore == 1:
             print("The smell of strawberries still fills the air, but the cauldron is empty\n",)
             input("return?")
 
+    def take_weapon():
+        choice = menu_handler(WT_wp_menu)
+        if choice != "Exit":
+            hero.loot_weapon(WT_weapons_stats[choice])
+            print(f"You have taken the {choice}")
+            WT_wp_menu.del_choice(choice)
+            WT_trackers.update("WR_LEFT", 1)
+            if WT_trackers.get("WR_LEFT") == 3:
+                print("~you monster\n")
+        else:
+            print("You walk away from the weapons rack, the wizard nods\n")
+
+    if choice == "The weapons rack":
+        # weapons_left = WT_trackers.get("WR_LEFT")
+        #interaction = WT_Trackers.get("WR")
+        if WT_trackers.get("WR") == 0: # first time
+            print("You walk up to the weapons rack, a large sword catches your eye\n"
+                  "A knife lays on the floor, and a large mace rests against the rack\n")
+            if yesno_loop(input("Would you like to take a weapon? Y/N: "), "Y/N") == 1:
+                WT_trackers.update("WR", 1)
+                WT_trackers.update("EXIT", 1)
+                take_weapon()
+            else:
+                input("Indecisive aren't we?")
+
+        elif WT_trackers.get("WR_LEFT") == 1:
+            print(f"Oh, no. no yeah you may need another weapon, the {WT_wp_menu.choices[0]} and a {WT_wp_menu.choices[1]}\n"+
+                   "lay in front of you")
+            if yesno_loop(input("Would you like to take a weapon? Y/N: "), "Y/N") == 1:
+                take_weapon()
+            else:
+                print("Good idea, best not be too greedy\n")
+
+        elif WT_trackers.get("WR_LEFT") == 2:
+            print(f"One weapon remains, a {WT_wp_menu.choices[0]}\n"+
+                  "You know you don't have to take every weapon right?\n")
+            if yesno_loop(input("Would you like to take a weapon? Y/N: "), "Y/N") == 1:
+                take_weapon()
+            else:
+                print("You walk away from the weapons rack, for now...\n")
+
+        elif WT_trackers.get("WR_LEFT") == 3:
+            print("You walk toward an empty stand, relishing in your victory\n"+
+                  "The wizard looks at you, and shakes his head\n")
+            WT_trackers.update("WR_LEFT", 1)
+            input("return?")
+
+        else:
+            text_list = ["The stand is empty...\n", "Yep, empty stand...\n", "Standing empty\n",
+                         "...\n", f"Nothing to see here {hero.name}\n", "Really I mean it\n",
+                         "...\n", "...\n", "Okay fine, you win\n",]
+            count = WT_trackers.get("WR_LEFT") - 4
+            if count < len(text_list):
+                print(text_list[count])
+            elif WT_trackers.get("WR") == 1:
+                hero.loot([1, "NOTHING"])
+                print("You have taken NOTHING !!!!")
+                WT_trackers.update("WR", 1)
+            else:
+                print("Yeah sure take another one")
+                hero.loot([1, "NOTHING"])
+                print("You have taken NOTHING !!!!")
+            WT_trackers.update("WR_LEFT", 1)
+            input("return?")
+
+
     if choice == "The window":
         print("window test")
-    
-    if choice == "The weapons rack":
-        print("weapons rack test")

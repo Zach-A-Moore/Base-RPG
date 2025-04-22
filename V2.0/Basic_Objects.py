@@ -67,6 +67,12 @@ class Tracker:
             if key == name:
                 return value
         return 404
+    
+    def set(self, name : str, new : int) -> None:
+        """sets the value of the key"""
+        for key in self.trackers.keys():
+            if key == name:
+                self.trackers[key] = new
 
     def delete(self, name):
         for key in self.trackers.keys():
