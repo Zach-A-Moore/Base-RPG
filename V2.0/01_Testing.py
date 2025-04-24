@@ -3,6 +3,10 @@ from Basic_Objects import Scene, Object, Player, Tracker, Entity, Goblin
 from Consumables import consumable_tracker
 from unittest.mock import patch
 
+# this should be a universal test for all or most functions from the codebase
+# beyond basic testing use "with patch", to automaticcaly put an input in the
+# input function, so you can test the code without having to manually input
+
 def test_consumable():
     bob = Player(25, 30, "Bob", [])
     print(bob)

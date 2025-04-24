@@ -1,7 +1,11 @@
 
+# This is the backbone for most the code. A lot of Classes and functions rely on
+# this code to work. If you plan to repeatedly use a function, put it here
+
 def yesno (value : str) -> int :
-    """ This Function takes an Input from the user as a value, checks if it's a non blank string, and if it is, it will check if the 
-    first letter input is a y or n. If the input could not be read as a y or n, then the program will return a 2. Y will return a 1, and a n will return a 0"""
+    """ This function takes a string and checks if it is a yes or no answer.
+    If it is a yes answer, it returns 1. If it is a no answer, it returns 0.
+    a 2 represents an error."""
     if (not isinstance(value, str)):
         return 2
     elif (value == ""):
@@ -27,8 +31,9 @@ def yesno_loop (input_1 : str, line : str = "Y/N") -> int :
             input_1 = input(f"{line} ")
 
 def choice_num (input : str, max : int) -> int:
-    """ This function takes a input and a maximum, if the input is both a positive integer and lesser then or equal
-    to the max then this return input as an int, otherwise a 404 error will be returned"""
+    """ This function tests an input, mainly for menu selection. It will check
+    if the given number is >= a max and will return it. 404 is returned if the input
+    is not a number or if it is out of range. """
     if (isinstance(input, str) and input.isdigit() == True and isinstance(max, int)):
         input = int(input)
         if ((input > 0) and (input <= max)):
@@ -39,12 +44,11 @@ def choice_num (input : str, max : int) -> int:
         return 404
 
 def choice_num_loop (choices : dict, input_1 : str) -> int:
+    """This function loops choice num until a matching input is found."""
     max = len(choices)
-    run = 0
-    while run == 0:
+    while True:
         choice = choice_num(input_1, max)
         if choice != 404:
-            run = 1
             return choice
         else:
             temp_num = choices.values()
@@ -56,13 +60,20 @@ def choice_num_loop (choices : dict, input_1 : str) -> int:
             continue
 
 def menu_handler (choices : object) -> int:
+    """Given a list of choices, this function will print the choices and ask for a selection.
+    until a valid selection is made. It will return the selected choice."""
     print(choices)
     temp_input = input("What would you like to choose? ")
     temp_input = choice_num_loop(choices.compile_scene(), temp_input)
     return choices.choices[temp_input - 1]
 
 def print_choice (choices : dict[str : int]) -> None:
-    """Prints dictionaries"""
+    """Prints dictionaries in a menu format.
+    1.) choice 1
+    2.) choice 2
+    3.) choice 3
+    """
+
     for key, value in choices.items():
         print(f"{value}.) {key}")
 

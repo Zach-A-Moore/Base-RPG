@@ -4,13 +4,18 @@ import sys
 import random 
 
 class Scene:
-    """ menu handler """
+    """ menu handler, used as a fancy list. makes menu handling more efficient"""
 
     def __init__(self, choices : list[str] = []):
         self.choices = choices.copy()
 
 
     def __str__ (self) -> None:
+        """ prints the menu in a readable format
+        1.) choice 1
+        2.) choice 2
+        3.) choice 3"""
+
         print_choice(self.compile_scene())
         return (" ")
 
@@ -38,6 +43,7 @@ class Scene:
 
 
 class Object:
+    """Object class, used for items and weapons"""
 
     def __init__(self, name : str, amount : int):
         self.name = name
@@ -52,6 +58,8 @@ class Object:
         return [temp, self.name]
     
 class Tracker:
+    """Tracker class, used for tracking stats and other things in scenes to
+    increase interactivity"""
 
     def __init__(self, trackers : dict[str : int] = {}):
         self.trackers = trackers.copy()
@@ -85,10 +93,12 @@ class Tracker:
                 del self.trackers[key]
 
 class Entity:
-    def __init__(self, name: str, HP: int, maxHP: int):
+    def __init__(self, name: str, HP: int, maxHP: int,
+                 data : Tracker = Tracker()):
         self.name = name
         self.HP = HP
         self.maxHP = maxHP
+        self.data = data
 
     def hurt(self, DMG: int, attacker_name: str):
         self.HP -= DMG
@@ -106,12 +116,16 @@ class Entity:
         print(f"{self.name} was killed by {attacker_name}")
 
 class Player(Entity): # declares the class
-    def __init__(self, HP : int, maxHP : int, name : str,
+    def __init__(self, HP : int, maxHP : int, name : str, data : Tracker,
                 items : list[list[int, str]]=[],
-                weapons : list[list[str,int,int,int]]=[]): # ["name", die #, die type, Hit bonus, damage bonus]
-        super().__init__(name, HP, maxHP)
+                weapons : list[list[str,int,int,int]]=[], # ["name", die #, die type, Hit bonus, damage bonus]
+                XP : int=0, skills : dict[str : int]={}): 
+        super().__init__(name, HP, maxHP, data)
         self.items = items
         self.weapons = weapons
+        self.XP = XP
+        self.skills = skills
+        self.data = data
 
     def __str__(self): 
         ## sample text:
@@ -265,6 +279,104 @@ class Goblin(Entity):
     def get_health(self) -> None:
         "print current health out of max health"
         return f"{self.HP}/{self.maxHP}"
+
+class Dialogue_Tree:
+    def __init__(self, name: str, options: list["Dialogue_Node"] = []):
+        self.name = name
+        self.options = options
+    
+    def add_option(self, nodes: list["Dialogue_Node"]) -> None:
+        """Adds a list of nodes to the tree"""
+        for node in nodes:
+            self.options.append(node)
+
+    def remove_option(self, node: "Dialogue_Node") -> None:
+        """Removes a node from the tree"""
+        if node in self.options:
+            self.options.remove(node)
+        else:
+            print(f"Node {node.name} not found in options.")
+
+    def run(self) -> None:
+        """Runs the dialogue tree"""
+        choices = [node for node in self.options if node.parent is None]
+        
+        if not choices:
+            print("No starting dialogue options available.")
+            return
+        
+        for node in choices:
+            if node.visited:
+                choices.remove(node)
+        
+        scene = Scene([])
+        while choices:
+            scene.choices = []  # Clear previous choices
+            for node in choices:
+                scene.add_choice(node.text_option)
+            choice = menu_handler(scene)
+            
+            if choice == "exit":
+                break
+            
+            temp_node = None
+            for node in choices:
+                if node.text_option == choice:
+                    temp_node = node
+                    break
+            
+            if temp_node is None:
+                print("Invalid choice selected.")
+                continue
+            
+            # Execute the node's function with arguments if provided
+            if temp_node.function1:
+                temp_node.function1()
+            if temp_node.function2:
+                temp_node.function2()
+            
+            print(temp_node.text_response)
+            temp_node.visited = True  # Mark node as visited
+            choices = temp_node.children  # Move to child nodes
+            
+            if not choices:
+                print("Dialogue ended.")
+                break
+
+class Dialogue_Node:
+    def __init__(self, name: str, text_option: str, text_response: str,
+                 parent: object = None, children: list[object] = [],
+                 function1: callable = None, function1_args: list = [],
+                 function2: callable = None, function2_args: list = [],
+                 visited: bool = False) -> None:
+        self.name = name
+        self.text_option = text_option
+        self.text_response = text_response
+        self.parent = parent
+        self.children = children
+        self.function1 = function1
+        self.function2 = function2
+        self.visited = visited
+
+    def remove_child(self, node : object) -> None:
+        """Removes the node from the tree"""
+        if node in self.children:
+            self.children.remove(node)
+        else:
+            print(f"Node {node.name} not found in children.")
+    
+    def delete(self) -> None:
+        """Deletes the node from the tree"""
+        if self.parent:
+            self.parent.remove_option(self)
+        else:
+            self.delete()
+
+
+def dialogue_visited(node: "Dialogue_Node") -> None:
+    """Marks the node as visited"""
+    node.visited = True
+
 
 def Goblin_generator() -> Goblin:
     """Generates a goblin with random stats"""

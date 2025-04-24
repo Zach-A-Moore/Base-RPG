@@ -6,10 +6,12 @@ def WT_Tutorial():
     print ("hello world\nYou hear the wizard utter as he casts aside the drapes of," \
     " his towers window.\nOpen your eyes and behold the world of Veliam.\n")
     temp_name = input("Welcome, what is your name traveler? (12 chr limit) ")
-
+    # hero is created with 30 HP, 30 maxHP, and a name of the players choosing
     hero = Player(30, 30, temp_name[0:16:1], [])
 
     print (f"Well {hero.name} you've found yourself in my tower, take a look around")
+    # The playter is given a yes or no choice, you will see a lot of this in the game
+    # answer_explore = # 1 = yes, 0 = no
     answer_explore = yesno_loop(input("Take a look around? Y/N: "),\
                                 "Take a look around? Y/N: ")
 
@@ -27,7 +29,7 @@ def WT_Tutorial():
                         "You Burp\n", "...\n", "Taste's like...\nchicken?\n"]
         if (temp_index < (len(wizard_list) - 1)): # will print until the list is empty
             print(wizard_list[temp_index])
-        elif (temp_index == (len(wizard_list) - 1)):
+        elif (temp_index == (len(wizard_list) - 1)): # on the last item give the player a buff
             print(wizard_list[temp_index])
             hero.maxHP += 5
             hero.HP += 5
@@ -44,20 +46,22 @@ def WT_Tutorial():
         "which holds a pretty cool looking sword\n")
 
     ### main menu
-    WT_explore = Scene(["The cauldron", "The weapons rack",
+    WT_explore = Scene(["The cauldron", "The weapons rack", 
                         "The window","Cheese?"])
     ### window menu
     WT_window = Scene(["something interesting", "something valuable",
                     "something else (exit)"])
-    ## window menu - goblin menu
-    WT_window_goblin = Scene(["Push a brick over", "Let the green man be"])
+    ### Info Trackers
     WT_trackers = Tracker()
+        ## cheese, handles deleting the cheese option from the menu
+        ## caldron, tracks if player has visited the cauldron
+        ## caldron_hp, tracks if the player has taken a potion from the cauldron
+        ## WR, tracks if the player has taken a weapon from the rack
+        ## WR_left, tracks how many weapons are left on the rack
+        ## EXIT, tracks if the player is ready to leave the tower
     WT_trackers.compile_track(["CHEESE", "CAULDRON", "CAULDRON_HP", "WR", "WR_LEFT", "EXIT"])
     ### weapons rack menu
     WT_wp_menu = Scene(["Sword", "Knife", "Mace", "Exit"])
-    WT_weapons_description = {"Knife" : "A rusty knife lays on the floor",
-                            "Sword" : "A silver sword catches your eye, its held by the hilt",
-                            "Mace" : "A large mace rest against the rack"}
     WT_weapons_stats = {"Knife" : ["Knife", 1, 4, -1, 0],
                         "Sword" : ["Sword", 2, 6, -1, 4],
                         "Mace" : ["Mace", 1, 8, -1, 2]}
@@ -76,11 +80,13 @@ def WT_Tutorial():
 
 
     while answer_explore == 1: # top floor of the tower
-        choice = menu_handler(WT_explore)
         # print(WT_explore)
         # temp_input = input("What would you like to choose? ")
         # temp_input = choice_num_loop(WT_explore.compile_scene(), temp_input)
         # choice = WT_explore.choices[temp_input - 1]
+        # VVVV
+        choice = menu_handler(WT_explore)
+
         if choice == "Cheese?":
             WT_explore.del_choice("Cheese?")
             WT_trackers.update("CHEESE", 1)
