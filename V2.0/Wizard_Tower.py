@@ -52,6 +52,7 @@ def wizard_tower():
             temp_answer = menu_handler(WT_scrap)
 
             if (temp_answer == "Spittoon"):
+                print()
                 
 
 
