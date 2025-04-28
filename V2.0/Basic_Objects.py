@@ -1,4 +1,4 @@
-from Basic_Functions import choice_num, choice_num_loop, print_choice
+from Basic_Functions import choice_num, choice_num_loop, print_choice, menu_handler
 from Consumables import consumable_tracker
 import sys
 import random 
