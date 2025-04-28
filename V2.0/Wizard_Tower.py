@@ -1,34 +1,27 @@
 from Basic_Functions import yesno_loop, choice_num_loop, print_choice, menu_handler
-from Basic_Objects import Scene, Object, Player, Tracker, Goblin, Dialogue_Tree, Dialogue_Node
+from Basic_Objects import Scene, Object, Player, Tracker, Goblin, Dialogue_Tree, Dialogue_Node, load_player, save_player
 from Consumables import consumable_tracker
+import json
 import ast
 
 file_path = r"C:\Users\zacha\OneDrive\Desktop\mooreHON\V2.0 text files\hero_save.txt"
 
-with open(file_path, "r") as file:
-    line = file.readline()
-    parts = line.strip().split(',', 4)  # split only the first 4 commas
+hero = load_player(file_path)
 
-    hero_name = parts[0].strip()
-    hero_HP = int(parts[1].strip())
-    hero_maxHP = int(parts[2].strip())
 
-    # Use ast.literal_eval for safe evaluation of list strings
-    hero_items = ast.literal_eval(parts[3].strip())
-    hero_weapons = ast.literal_eval(parts[4].strip())
-
-hero = Player(hero_HP, hero_maxHP, hero_name, hero_items, hero_weapons)
+print(hero.data.get("CHEESE"))
+# print(hero)
 
 #### Dialogue Tree ####
 
 ### Goblin Dialogue ###
 
-D_1_1_txt = ("Well my family the O'riels have been here for generations.\n"+
+D_1_1_txt = ("Well my family the O'riels have been here for generations.\n",\
              "I don't know much about him, but he is a good boss.\n")
 
 D_1_1 = Dialogue_Node("D_1_1", "How do you know the wizard?", "The wizard is upstairs, but I don't know him well.\n")
 
-D_1_txt = ("The goblin look up at you, 'Well, I'm Tute!, I guard the tower stranger.'\n",+
+D_1_txt = ("The goblin look up at you, 'Well, I'm Tute!, I guard the tower stranger.'\n",\
           "for the wizard is upstairs'\n")
 D_1 = Dialogue_Node("D_1", "What are you doing here?", D_1_txt, children=[D_1_1] )
 
@@ -50,4 +43,25 @@ def wizard_tower():
     ## window
     WT_window = Scene(["Look", "Exit"])
     ## scrap
-    WT_scrap = Scene(["Drawings", "Books", "Suspicious Tin", "Exit"])
+    WT_scrap = Scene(["Drawings", "Books", "Spittoon", "Exit"])
+
+    while True:
+        temp_answer = menu_handler(WT_main_room)
+
+        if (temp_answer == "Scrap"):
+            temp_answer = menu_handler(WT_scrap)
+
+            if (temp_answer == "Spittoon"):
+                
+
+
+
+
+
+
+
+def main():
+    wizard_tower()
+
+if __name__ == "__main__":
+    main()

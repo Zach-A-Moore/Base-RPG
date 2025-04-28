@@ -1,13 +1,14 @@
 from Basic_Functions import yesno_loop, choice_num_loop, print_choice, menu_handler
-from Basic_Objects import Scene, Object, Player, Tracker, Goblin
+from Basic_Objects import Scene, Object, Player, Tracker, Goblin, save_player, load_player
 from Consumables import consumable_tracker
+import json
 
 def WT_Tutorial():
     print ("hello world\nYou hear the wizard utter as he casts aside the drapes of," \
     " his towers window.\nOpen your eyes and behold the world of Veliam.\n")
     temp_name = input("Welcome, what is your name traveler? (12 chr limit) ")
     # hero is created with 30 HP, 30 maxHP, and a name of the players choosing
-    hero = Player(30, 30, temp_name[0:16:1], [])
+    hero = Player(30, 30, temp_name[0:16:1])
 
     print (f"Well {hero.name} you've found yourself in my tower, take a look around")
     # The playter is given a yes or no choice, you will see a lot of this in the game
@@ -48,9 +49,6 @@ def WT_Tutorial():
     ### main menu
     WT_explore = Scene(["The cauldron", "The weapons rack", 
                         "The window","Cheese?"])
-    ### window menu
-    WT_window = Scene(["something interesting", "something valuable",
-                    "something else (exit)"])
     ### Info Trackers
     WT_trackers = Tracker()
         ## cheese, handles deleting the cheese option from the menu
@@ -94,11 +92,13 @@ def WT_Tutorial():
             print("You have chosen a path you can not return from, may god have mercy",
                     " on your soul")
             print("\n You have gained, CHEESE \n")
-        else:
+            hero.data["CHEESE"] = 1
+            WT_explore.del_choice("Cheese?")
+        elif (len(WT_explore.choices) == 4 and WT_explore.choices[3] == "Cheese?"):
+            print("should be deleted")
             WT_explore.del_choice("Cheese?")
 
         if choice == "The cauldron":
-            potion = WT_trackers.get("CAULDRON_HP")
             if WT_trackers.get("CAULDRON") == 0: # first time
                 WT_trackers.update("EXIT", 1) # needs a total score of 3 to exit
                 WT_trackers.update("CAULDRON", 1)
@@ -139,6 +139,7 @@ def WT_Tutorial():
                     "A knife lays on the floor, and a large mace rests against the rack\n")
                 if yesno_loop(input("Would you like to take a weapon? Y/N: "), "Y/N") == 1:
                     WT_trackers.update("WR", 1)
+                    print(f"this is a WR tracker {WT_trackers.get("WR")}")
                     WT_trackers.update("EXIT", 1)
                     take_weapon()
                 else:
@@ -191,7 +192,7 @@ def WT_Tutorial():
             WT_trackers.update("EXIT", 1)
             input("return?")
 
-        if WT_trackers.get("EXIT") == 3 and "exit" not in WT_explore.choices:
+        if WT_trackers.get("CAULDRON") == 1 and WT_trackers.get("WR") == 1 and "Exit" not in WT_explore.choices:
             WT_explore.add_choice("Exit")
 
         if choice == "Exit":
@@ -209,10 +210,7 @@ def WT_Tutorial():
           "He waves his staff and the door opens\n")
     
     file_path = r"C:\Users\zacha\OneDrive\Desktop\mooreHON\V2.0 text files\hero_save.txt"
-
-    with open(file_path, "w") as file:
-        file.write(f"{hero.name}, {hero.HP}, {hero.maxHP}, {hero.items}, {hero.weapons}")
-
+    save_player(hero, file_path)
 
 
 def main():

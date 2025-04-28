@@ -2,6 +2,8 @@ from Basic_Functions import choice_num, choice_num_loop, print_choice
 from Consumables import consumable_tracker
 import sys
 import random 
+import ast
+import csv
 
 class Scene:
     """ menu handler, used as a fancy list. makes menu handling more efficient"""
@@ -25,6 +27,7 @@ class Scene:
         for elements in self.choices:
             temp_dict[elements] = tracker
             tracker += 1
+            # print(f"Debug: choices={self.choices}, compiled={temp_dict}")
         return temp_dict
     
     def del_choice(self, key : str):
@@ -40,7 +43,6 @@ class Scene:
     def add_choice(self, key : str):
         """adds a choice to the menu"""
         self.choices.append(key)
-
 
 class Object:
     """Object class, used for items and weapons"""
@@ -116,7 +118,7 @@ class Entity:
         print(f"{self.name} was killed by {attacker_name}")
 
 class Player(Entity): # declares the class
-    def __init__(self, HP : int, maxHP : int, name : str, data : Tracker,
+    def __init__(self, HP : int, maxHP : int, name : str, data : dict[str : int]={},
                 items : list[list[int, str]]=[],
                 weapons : list[list[str,int,int,int]]=[], # ["name", die #, die type, Hit bonus, damage bonus]
                 XP : int=0, skills : dict[str : int]={}): 
@@ -128,11 +130,30 @@ class Player(Entity): # declares the class
         self.data = data
 
     def __str__(self): 
-        ## sample text:
-        # The Hero Bob
-        # HP 20/20
-        #
-        return f"The Hero {self.name}\nHP {self.HP}\\{self.maxHP}\n"
+        output = f"\nThe Hero {self.name}\n"
+        output += f"HP {self.HP}/{self.maxHP}       XP {self.XP}\n\n"
+        # Skills
+        output += "Skills:\n"
+        if self.skills:
+            for skill, level in self.skills.items():
+                output += f"        {skill} / {level}\n"
+        else:
+            output += "        None (loser)\n"
+        # Items
+        output += "Items:\n"
+        if self.items:
+            for amount, name in self.items:
+                output += f"        {name} / {amount}\n"
+        else:
+            output += "        None\n"
+        # Weapons
+        output += "Weapons:\n"
+        if self.weapons:
+            for name, die_num, die_type, hit_bonus, dmg_bonus in self.weapons:
+                output += f"        {name} / {die_num}d{die_type} + {dmg_bonus}\n"
+        else:
+            output += "        None\n"
+        return output
     
     def on_death(self, attacker_name: str):
         print(f"You were killed by {attacker_name}")
@@ -174,7 +195,6 @@ class Player(Entity): # declares the class
                         f"{dmg} damage with a +{hit} bonus to hit")
         print()
     
-
     def attack(self, other : Entity):
         print(f"\nWhat weapon would you like to use?")
         temp_tracker = 1
@@ -233,6 +253,42 @@ class Player(Entity): # declares the class
                 break
             if temp_input == 4:
                 self.use_item()
+
+def save_player(player: Player, filepath: str, data: dict[str : int] = None):
+    with open(filepath, mode="w", newline='') as file:
+        fieldnames = ["name", "HP", "maxHP", "XP", "skills", "items", "weapons", "data"]
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+
+        writer.writerow({
+            "name": player.name,
+            "HP": player.HP,
+            "maxHP": player.maxHP,
+            "XP": player.XP,
+            "skills": str(player.skills),
+            "items": str(player.items),
+            "weapons": str(player.weapons),
+            "data": str(player.data)
+        })
+
+def load_player(filepath: str) -> Player:
+    with open(filepath, mode="r", newline='') as file:
+        reader = csv.DictReader(file)
+        row = next(reader)
+
+        name = row["name"]
+        HP = int(row["HP"])
+        maxHP = int(row["maxHP"])
+        XP = int(row["XP"])
+        skills = ast.literal_eval(row["skills"])
+        items = ast.literal_eval(row["items"])
+        weapons = ast.literal_eval(row["weapons"])
+        data = ast.literal_eval(row["data"])
+
+        
+        player = Player(HP, maxHP, name, data, items, weapons, XP, skills)
+
+        return player
 
 class Goblin(Entity):
     """ Goblin class, inherits from Entity """
@@ -346,8 +402,8 @@ class Dialogue_Tree:
 class Dialogue_Node:
     def __init__(self, name: str, text_option: str, text_response: str,
                  parent: object = None, children: list[object] = [],
-                 function1: callable = None, function1_args: list = [],
-                 function2: callable = None, function2_args: list = [],
+                 function1: callable = None,
+                 function2: callable = None,
                  visited: bool = False) -> None:
         self.name = name
         self.text_option = text_option
@@ -376,7 +432,6 @@ class Dialogue_Node:
 def dialogue_visited(node: "Dialogue_Node") -> None:
     """Marks the node as visited"""
     node.visited = True
-
 
 def Goblin_generator() -> Goblin:
     """Generates a goblin with random stats"""

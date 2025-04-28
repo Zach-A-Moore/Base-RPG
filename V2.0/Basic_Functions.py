@@ -1,4 +1,4 @@
-
+import csv
 # This is the backbone for most the code. A lot of Classes and functions rely on
 # this code to work. If you plan to repeatedly use a function, put it here
 

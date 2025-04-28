@@ -1,1 +1,2 @@
-y, 26, 30, [], [['Sword', 2, 6, -1, 4]]
+name,HP,maxHP,XP,skills,items,weapons,data
+Ass,26,30,0,{},[],"[['Sword', 2, 6, -1, 4]]",{}
