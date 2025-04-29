@@ -34,7 +34,7 @@ def wizard_tower():
     WT_main_room = Scene(["Goblin", "Chest", "Window", "Scrap"])
     ## goblin
     WT_goblin = Scene(["Talk", "Give", "Attack", "Exit"])
-    # goblin talk
+    # goblin-talk
     WT_goblin_talk = Scene(["'What are you doing here?'", "'Do you know the Wizard upstairs?'",
                             "'What's your name?'", "'What's in the chest?'"])
     WT_goblin_give = Scene(["Give Cheese", "Give Potion", "Give Sword", "Exit"])
@@ -44,6 +44,12 @@ def wizard_tower():
     WT_window = Scene(["Look", "Exit"])
     ## scrap
     WT_scrap = Scene(["Drawings", "Books", "Spittoon", "Exit"])
+    # scrap-spitoon
+    scrap_spittoon_text = ["This encrusted brass bowl seems to have been used as a spittoon the goblin at the entrance",
+                           "...\nYour not serious... It's a spittoon\nFilled with spit, thats it",
+                           "I'm...\n I'm not sure whats happening here\nYou are currently eye level with a vat of goblin spit\
+                            \n The smell stings your eyes and the literal muck coagulates in front of you"]
+    scrap_spittoon_response = ["Look closer? Y/N", "Look even closer? Y/N"]
 
     while True:
         temp_answer = menu_handler(WT_main_room)

@@ -6,7 +6,7 @@ import json
 def WT_Tutorial():
     print ("hello world\nYou hear the wizard utter as he casts aside the drapes of," \
     " his towers window.\nOpen your eyes and behold the world of Veliam.\n")
-    temp_name = input("Welcome, what is your name traveler? (12 chr limit) ")
+    temp_name = input("Welcome, what is your name traveler? (16 chr limit) ")
     # hero is created with 30 HP, 30 maxHP, and a name of the players choosing
     hero = Player(30, 30, temp_name[0:16:1])
 
